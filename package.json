@@ -1,0 +1,11 @@
+{
+  "name": "openclaw-dashboard",
+  "private": true,
+  "scripts": {
+    "dev": "cd server && npm run dev",
+    "dev:frontend": "cd frontend && npx vite --port 5173",
+    "build": "cd frontend && npx vite build",
+    "start": "cd server && npm start",
+    "setup": "cd frontend && npm install && cd ../server && npm install"
+  }
+}
