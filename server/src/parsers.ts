@@ -127,6 +127,77 @@ export function getCommands(limit = 100) {
   return readJsonlTail(path.join(OPENCLAW_DIR, 'logs', 'commands.log'), limit);
 }
 
+export function getTokenUsage() {
+  const agents = getAgents();
+  const now = Date.now();
+  const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
+
+  let totalTokens = 0;
+  let monthlyTokens = 0;
+  let totalSessions = 0;
+  const modelMap = new Map<string, { totalTokens: number; sessionCount: number }>();
+  const dailyMap = new Map<string, number>();
+
+  // Initialize last 30 days
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now - i * 24 * 60 * 60 * 1000);
+    dailyMap.set(d.toISOString().slice(0, 10), 0);
+  }
+
+  const byAgent = agents.map((a: any) => {
+    const sessions = getAgentSessions(a.id);
+    const stats = getAgentStats(a.id);
+    totalTokens += stats.totalTokens;
+    monthlyTokens += stats.monthlyTokens;
+    totalSessions += stats.sessionCount;
+
+    for (const s of sessions as any[]) {
+      // Per-model aggregation
+      const model = s.model || 'unknown';
+      const existing = modelMap.get(model);
+      if (existing) {
+        existing.totalTokens += s.totalTokens;
+        existing.sessionCount += 1;
+      } else {
+        modelMap.set(model, { totalTokens: s.totalTokens, sessionCount: 1 });
+      }
+
+      // Daily aggregation
+      if (s.updatedAt > thirtyDaysAgo) {
+        const dateKey = new Date(s.updatedAt).toISOString().slice(0, 10);
+        if (dailyMap.has(dateKey)) {
+          dailyMap.set(dateKey, dailyMap.get(dateKey)! + s.totalTokens);
+        }
+      }
+    }
+
+    return {
+      agentId: a.id,
+      agentName: a.identity?.name || a.name,
+      emoji: a.identity?.emoji || '🤖',
+      totalTokens: stats.totalTokens,
+      monthlyTokens: stats.monthlyTokens,
+      sessionCount: stats.sessionCount,
+    };
+  });
+
+  const byModel = Array.from(modelMap.entries())
+    .map(([model, v]) => ({ model, totalTokens: v.totalTokens, sessionCount: v.sessionCount }))
+    .sort((a, b) => b.totalTokens - a.totalTokens);
+
+  const daily = Array.from(dailyMap.entries())
+    .map(([date, tokens]) => ({ date, tokens }));
+
+  return {
+    totalTokens,
+    monthlyTokens,
+    totalSessions,
+    byModel,
+    byAgent: byAgent.sort((a: any, b: any) => b.totalTokens - a.totalTokens),
+    daily,
+  };
+}
+
 export function getSessionMessages(agentId: string, sessionId: string, limit = 50) {
   const sessionsDir = path.join(OPENCLAW_DIR, 'agents', agentId, 'sessions');
   try {

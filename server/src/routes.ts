@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   getOverview, getAgents, getAgentStats, getAgentSessions,
   getSessionMessages, getHealth, getUsage, getCronJobs,
-  getCommands, getAllSessions,
+  getCommands, getAllSessions, getTokenUsage,
 } from './parsers.js';
 
 export const apiRouter = Router();
@@ -53,4 +53,8 @@ apiRouter.get('/commands', (req, res) => {
 
 apiRouter.get('/sessions', (_req, res) => {
   res.json(getAllSessions());
+});
+
+apiRouter.get('/token-usage', (_req, res) => {
+  res.json(getTokenUsage());
 });

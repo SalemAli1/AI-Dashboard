@@ -4,6 +4,7 @@ import AgentDetail from './pages/AgentDetail'
 import HealthPage from './pages/HealthPage'
 import SessionsPage from './pages/SessionsPage'
 import CronPage from './pages/CronPage'
+import TokenUsagePage from './pages/TokenUsagePage'
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
             <Route path="/agents/:id" element={<AgentDetail />} />
             <Route path="/health" element={<HealthPage />} />
             <Route path="/sessions" element={<SessionsPage />} />
+            <Route path="/tokens" element={<TokenUsagePage />} />
             <Route path="/cron" element={<CronPage />} />
           </Routes>
         </main>
@@ -28,6 +30,7 @@ export default function App() {
           <NavLink to="/" end className={({ isActive }) => "flex-1 text-center py-4 text-[10px] font-bold uppercase tracking-widest " + (isActive ? 'text-[#4ade80] border-b-2 border-[#4ade80]' : 'text-[#8e959d]')}>DASHBOARD</NavLink>
           <NavLink to="/health" className={({ isActive }) => "flex-1 text-center py-4 text-[10px] font-bold uppercase tracking-widest " + (isActive ? 'text-[#4ade80] border-b-2 border-[#4ade80]' : 'text-[#8e959d]')}>HEALTH</NavLink>
           <NavLink to="/sessions" className={({ isActive }) => "flex-1 text-center py-4 text-[10px] font-bold uppercase tracking-widest " + (isActive ? 'text-[#4ade80] border-b-2 border-[#4ade80]' : 'text-[#8e959d]')}>SESSIONS</NavLink>
+          <NavLink to="/tokens" className={({ isActive }) => "flex-1 text-center py-4 text-[10px] font-bold uppercase tracking-widest " + (isActive ? 'text-[#4ade80] border-b-2 border-[#4ade80]' : 'text-[#8e959d]')}>TOKENS</NavLink>
           <NavLink to="/cron" className={({ isActive }) => "flex-1 text-center py-4 text-[10px] font-bold uppercase tracking-widest " + (isActive ? 'text-[#4ade80] border-b-2 border-[#4ade80]' : 'text-[#8e959d]')}>CRON</NavLink>
         </nav>
       </div>
